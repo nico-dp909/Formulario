@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+
+    body {
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .formulario {
+      background: #fff;
+      border-radius: 10px;
+      padding: 2rem 2.5rem;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      height: fit-content;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.75rem;
+      color: #1a1a1a;
+    }
+
+    .campo { margin-bottom: 1.25rem; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus { border-color: #3B82F6; }
+
+    textarea { resize: vertical; }
+
+    .captcha {
+      margin-bottom: 1.5rem;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background: #3B82F6;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover { background: #2563eb; }
+
+    #mensaje-ok {
+      display: none;
+      text-align: center;
+      margin-top: 12px;
+      color: #16a34a;
+      font-size: 14px;
+    }
+
+    #mensaje-error {
+      display: none;
+      text-align: center;
+      margin-top: 12px;
+      color: #e24b4a;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="formulario">
+    <h1>Contáctanos</h1>
+
+    <form id="formulario-contacto">
+
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required />
+      </div>
+
+      <div class="campo">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="campo">
+        <label for="asunto">Asunto</label>
+        <input type="text" id="asunto" name="asunto" required />
+      </div>
+
+      <div class="campo">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="6" required></textarea>
+      </div>
+
+      <div class="captcha">
+        <div class="g-recaptcha" data-sitekey="6LfJyzAtAAAAAPLPz4CIV5Lnt1YUN5kGtL-U1_Dn"></div>
+      </div>
+
+      <button type="submit">Enviar</button>
+
+      <p id="mensaje-ok">✓ Mensaje enviado correctamente</p>
+      <p id="mensaje-error">✗ Hubo un error, intentá de nuevo</p>
+
+    </form>
+  </div>
+
+  <script>
+    var PUBLIC_KEY    = "_64W7mvikZefc3HyD";
+    var SERVICE_ID    = "service_s4j3s3b";
+    var TEMPLATE_ID   = "template_f0qilek";
+    var TEMPLATE_ID_2 = "template_5c8o2pg";
+
+    emailjs.init(PUBLIC_KEY);
+
+    document.getElementById("formulario-contacto").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      var captcha = grecaptcha.getResponse();
+
+      if (!captcha) {
+        alert("Por favor confirmá que no sos un robot");
+        return;
+      }
+
+      emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, this)
+        .then(function() {
+          emailjs.sendForm(SERVICE_ID, TEMPLATE_ID_2, document.getElementById("formulario-contacto"));
+          document.getElementById("mensaje-ok").style.display = "block";
+          document.getElementById("mensaje-error").style.display = "none";
+          document.getElementById("formulario-contacto").reset();
+          grecaptcha.reset();
+        }, function() {
+          document.getElementById("mensaje-error").style.display = "block";
+          document.getElementById("mensaje-ok").style.display = "none";
+        });
+    });
+  </script>
+</body>
+</html>
